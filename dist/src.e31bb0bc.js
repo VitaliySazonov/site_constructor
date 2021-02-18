@@ -133,7 +133,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var model = [{
   type: "title",
-  value: "Hello World from JS"
+  value: "Hello World from JS111",
+  options: {
+    tag: 'h2',
+    styles: ""
+  }
 }, {
   type: "text",
   value: "here we go with some text"
@@ -172,7 +176,10 @@ exports.templates = void 0;
 var _utils = require("./utils");
 
 function title(block) {
-  return (0, _utils.row)((0, _utils.col)("<h1>".concat(block.value, "</h1>")));
+  var _block$options$tag;
+
+  var tag = (_block$options$tag = block.options.tag) !== null && _block$options$tag !== void 0 ? _block$options$tag : 'h1';
+  return (0, _utils.row)((0, _utils.col)("<".concat(tag, ">").concat(block.value, "</").concat(tag, ">")));
 }
 
 function text(block) {
@@ -315,7 +322,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55756" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59818" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
