@@ -119,6 +119,25 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   return newRequire;
 })({"assets/image.png":[function(require,module,exports) {
 module.exports = "/image.90ac9039.png";
+},{}],"classes/blocks.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Block = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Block = function Block(type, value, options) {
+  _classCallCheck(this, Block);
+
+  this.type = type;
+  this.value = value;
+  this.options = options;
+};
+
+exports.Block = Block;
 },{}],"model.js":[function(require,module,exports) {
 "use strict";
 
@@ -129,27 +148,45 @@ exports.model = void 0;
 
 var _image = _interopRequireDefault(require("./assets/image.png"));
 
+var _blocks = require("./classes/blocks");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var model = [{
-  type: "title",
-  value: "Hello World from JS111",
-  options: {
-    tag: 'h2',
-    styles: ""
+var model = [new _blocks.Block('title', 'Hello World from JS111', {
+  tag: "h2",
+  styles: {
+    color: '#fff',
+    padding: '1.5rem',
+    'text-align': 'center',
+    background: 'linear-gradient(to bottom, #8e2de2, #4a00e0)'
   }
-}, {
-  type: "text",
-  value: "here we go with some text"
-}, {
-  type: "columns",
-  value: ["1111", "2222222", "33333333", '55555']
-}, {
-  type: "image",
-  value: _image.default
-}];
+}), new _blocks.Block('text', 'here we go with some text', {
+  styles: {
+    background: 'linear-gradient(to left, #f2994a, #f2c94c)',
+    padding: '1rem',
+    'font-weight': 'bold'
+  }
+}), new _blocks.Block('columns', ["App on the clean JS", "Will known how SOLID and OOP works", "JS is simple"], {
+  styles: {
+    background: 'linear-gradient(to right, #ff0099, #493240)',
+    padding: '2rem',
+    color: '#fff',
+    'font-weight': 'bold'
+  }
+}), new _blocks.Block('image', _image.default, {
+  styles: {
+    padding: '2rem 0',
+    display: 'flex',
+    'justify-content': 'center'
+  },
+  imageStyles: {
+    width: '500px',
+    height: 'auto'
+  },
+  alt: 'This is an image'
+})];
 exports.model = model;
-},{"./assets/image.png":"assets/image.png"}],"utils.js":[function(require,module,exports) {
+},{"./assets/image.png":"assets/image.png","./classes/blocks":"classes/blocks.js"}],"utils.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -157,13 +194,25 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.row = row;
 exports.col = col;
+exports.css = css;
 
 function row(content) {
-  return "<div class=\"row\">".concat(content, "</div>");
+  var styles = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  return "<div class=\"row\" style=\"".concat(styles, "\">").concat(content, "</div>");
 }
 
 function col(content) {
   return "<div class=\"col-sm\">".concat(content, "</div>");
+}
+
+function css() {
+  var styles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  var toString = function toString(key) {
+    return "".concat(key, ": ").concat(styles[key]);
+  };
+
+  return Object.keys(styles).map(toString).join(';');
 }
 },{}],"templates.js":[function(require,module,exports) {
 "use strict";
@@ -176,25 +225,31 @@ exports.templates = void 0;
 var _utils = require("./utils");
 
 function title(block) {
-  var _block$options$tag;
-
-  var tag = (_block$options$tag = block.options.tag) !== null && _block$options$tag !== void 0 ? _block$options$tag : 'h1';
-  return (0, _utils.row)((0, _utils.col)("<".concat(tag, ">").concat(block.value, "</").concat(tag, ">")));
+  var _block$options = block.options,
+      _block$options$tag = _block$options.tag,
+      tag = _block$options$tag === void 0 ? 'h1' : _block$options$tag,
+      styles = _block$options.styles;
+  return (0, _utils.row)((0, _utils.col)("<".concat(tag, ">").concat(block.value, "</").concat(tag, ">")), (0, _utils.css)(styles));
 }
 
 function text(block) {
-  return (0, _utils.row)((0, _utils.col)("<p>".concat(block.value, "</p>")));
+  return (0, _utils.row)((0, _utils.col)("<p>".concat(block.value, "</p>")), (0, _utils.css)(block.options.styles));
 }
 
 function columns(block) {
   // const html = block.value.map(item => col(item)) // the same
   var html = block.value.map(_utils.col).join(''); // the same as before
 
-  return (0, _utils.row)(html);
+  return (0, _utils.row)(html, (0, _utils.css)(block.options.styles));
 }
 
 function image(block) {
-  return (0, _utils.row)("<img src=\"".concat(block.value, "\" >"));
+  var _block$options2 = block.options,
+      is = _block$options2.imageStyles,
+      _block$options2$alt = _block$options2.alt,
+      alt = _block$options2$alt === void 0 ? '' : _block$options2$alt,
+      styles = _block$options2.styles;
+  return (0, _utils.row)("<img src=\"".concat(block.value, "\" alt=\"").concat(alt, "\" style=\"").concat((0, _utils.css)(is), "\" >"), (0, _utils.css)(styles));
 }
 
 var templates = {
@@ -322,7 +377,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59818" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59363" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
